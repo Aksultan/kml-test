@@ -1,0 +1,1 @@
+export const SET_KML = 'set_kml'
