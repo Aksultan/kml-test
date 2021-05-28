@@ -1,10 +1,9 @@
 import './KmlParser.css';
-import { SET_KML } from '../../redux/actions';
+import { SET_KML, SET_POPUPSTATE } from '../../redux/actions';
 import store from '../../redux/store';
-import { useState } from 'react';
+import { connect } from 'react-redux';
 
-function KmlParser(){
-    let [popupState, setPopupState] = useState('active')
+function KmlParser({popupState, ...props}){
     let handleChange = (e) => {
         e.preventDefault();
         if(e.target.files[0]){
@@ -13,13 +12,18 @@ function KmlParser(){
                 let kml = parser.parseFromString(text, 'text/xml')
                 store.dispatch({type: SET_KML, payload: kml})
             })
-            setPopupState('')
+            store.dispatch({type: SET_POPUPSTATE, payload: ''})
         }
+    }
+
+    let handleClick = () => {
+        store.dispatch({type: SET_POPUPSTATE, payload: ''})
     }
 
     return (
         <div className={"outer " + popupState}>
-            <div className={"overlay " + popupState} onClick={()=>setPopupState('')}>
+            <div className={"overlay " + popupState} 
+                onClick={handleClick}>
             </div>
             <div className={"popup " + popupState}>
                 <input type="file" accept=".kml" onChange={handleChange}/>
@@ -28,4 +32,8 @@ function KmlParser(){
     )
 }
 
-export default KmlParser;
+let mapStateToProps = (state) => ({
+    popupState: state.popupState
+})
+
+export default connect(mapStateToProps)(KmlParser);
